@@ -175,7 +175,7 @@ class SecondFragment : Fragment() {
     }
 }
 
-private class MaskDragShadowBuilder(view: View) : View.DragShadowBuilder(view) {
+class MaskDragShadowBuilder(view: View) : View.DragShadowBuilder(view) {
 
     // Defines a callback that sends the drag shadow dimensions and touch point back to the
     // system.

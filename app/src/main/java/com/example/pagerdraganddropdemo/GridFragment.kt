@@ -1,6 +1,8 @@
 package com.example.pagerdraganddropdemo
 
 import android.os.Bundle
+import android.util.Log
+import android.view.DragEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,7 +20,46 @@ class GridFragment : Fragment() {
         binding.grid.layoutManager =
             GridLayoutManager(requireContext(), 3, GridLayoutManager.VERTICAL, false)
         binding.grid.adapter = ItemAdapter(requireActivity() as MainActivity)
+
+        binding.root.setOnDragListener(maskDragListener)
         return binding.root
+    }
+
+    private val maskDragListener = View.OnDragListener { view, dragEvent ->
+        val draggableItem = dragEvent.localState as View
+        Log.i("BOBAN", "X: ${dragEvent.x}")
+
+        if (dragEvent.x > 900) {
+            (activity as MainActivity).binding.viewPager2.setCurrentItem(2, true)
+        }
+
+        when (dragEvent.action) {
+            DragEvent.ACTION_DRAG_STARTED -> {
+                true
+            }
+            DragEvent.ACTION_DRAG_ENTERED -> {
+                true
+            }
+            DragEvent.ACTION_DRAG_LOCATION -> {
+                true
+            }
+            DragEvent.ACTION_DRAG_EXITED -> {
+                draggableItem.visibility = View.VISIBLE
+                view.invalidate()
+                true
+            }
+            DragEvent.ACTION_DROP -> {
+                true
+            }
+            DragEvent.ACTION_DRAG_ENDED -> {
+                draggableItem.visibility = View.VISIBLE
+                view.invalidate()
+                true
+            }
+            else -> {
+                false
+            }
+        }
     }
 
     companion object {

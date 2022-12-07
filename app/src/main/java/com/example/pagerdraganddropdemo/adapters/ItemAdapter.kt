@@ -19,6 +19,7 @@ import androidx.core.view.DragStartHelper
 import androidx.draganddrop.DropHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.example.pagerdraganddropdemo.MainActivity
+import com.example.pagerdraganddropdemo.MaskDragShadowBuilder
 import com.example.pagerdraganddropdemo.R
 import com.example.pagerdraganddropdemo.databinding.ItemGridBinding
 import java.io.FileInputStream
@@ -37,50 +38,25 @@ class ItemAdapter(private val activity: MainActivity) :
         RecyclerView.ViewHolder(binding.root) {
 
         init {
-            binding.root.setOnDragListener { v, event ->
-                when (event.action) {
-                    DragEvent.ACTION_DRAG_STARTED -> {
-                        Log.i("BOBAN", "STARTED V X:${v.x} Y:${v.y} event X${event.x} Y${event.y}")
-                    }
-                    DragEvent.ACTION_DRAG_LOCATION -> {
-                        Log.i("BOBAN", "LOCATION V X:${v.x} Y:${v.y} event X${event.x} Y${event.y}")
-                    }
-                    DragEvent.ACTION_DROP -> {
-                        Log.e("BOBAN", "DROP V X:${v.x} Y:${v.y} event X${event.x} Y${event.y}")
-                    }
-                    DragEvent.ACTION_DRAG_ENDED -> {
-                        Log.e("BOBAN", "ENDED V X:${v.x} Y:${v.y} event X${event.x} Y${event.y}")
-                    }
-                    else -> {
-
-                    }
-                }
-                if (event.x > MainActivity.width - 100) {
-                    Toast.makeText(activity, "TOAST", Toast.LENGTH_SHORT).show()
-                }
-                true
-            }
-            // Use the DragStartHelper class to easily support initiating drag and drop in response to
-            // both long press and mouse drag events. Note the call to attach() at the end. Without it,
-            // the listener would never actually be attached to the view. Also note that attach() replaces
-            // any OnTouchListener or OnLongClickListener already attached to the view.
-            DragStartHelper(binding.root) { view, _ ->
+            DragStartHelper(binding.text) { view, _ ->
                 val text = (view as TextView).text
 
-                // Create the ClipData to be shared
-                val dragClipData = ClipData.newPlainText(/*label*/"Text", text)
+                val item = ClipData.Item(text)
 
-                // Use the default drag shadow
-                val dragShadowBuilder = View.DragShadowBuilder(view)
+                val dataToDrag = ClipData(
+                    text,
+                    arrayOf(ClipDescription.MIMETYPE_TEXT_PLAIN),
+                    item
+                )
+                val maskShadow = MaskDragShadowBuilder(view)
 
-                // Initiate the drag. Note the DRAG_FLAG_GLOBAL, which allows for drag events to be listened
-                // to by apps other than the source app.
                 view.startDragAndDrop(
-                    dragClipData,
-                    dragShadowBuilder,
-                    null,
+                    dataToDrag,
+                    maskShadow,
+                    view,
                     View.DRAG_FLAG_GLOBAL
                 )
+
             }.attach()
 
             DropHelper.configureView(
