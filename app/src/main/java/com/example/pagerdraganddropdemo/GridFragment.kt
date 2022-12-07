@@ -12,26 +12,31 @@ import com.example.pagerdraganddropdemo.adapters.ItemAdapter
 import com.example.pagerdraganddropdemo.databinding.FragmentFirstBinding
 
 class GridFragment : Fragment() {
+    private lateinit var binding: FragmentFirstBinding
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
-        val binding = FragmentFirstBinding.inflate(inflater, container, false)
+        binding = FragmentFirstBinding.inflate(inflater, container, false)
         binding.grid.layoutManager =
             GridLayoutManager(requireContext(), 3, GridLayoutManager.VERTICAL, false)
         binding.grid.adapter = ItemAdapter(requireActivity() as MainActivity)
-
         binding.root.setOnDragListener(maskDragListener)
+        binding.grid.setOnDragListener(maskDragListener)
         return binding.root
     }
 
     private val maskDragListener = View.OnDragListener { view, dragEvent ->
         val draggableItem = dragEvent.localState as View
         Log.i("BOBAN", "X: ${dragEvent.x}")
-
-        if (dragEvent.x > 900) {
-            (activity as MainActivity).binding.viewPager2.setCurrentItem(2, true)
+        if (dragEvent.x > 0) {
+            if (dragEvent.x > binding.guideRight.x) {
+                (activity as MainActivity).binding.viewPager2.setCurrentItem(1, true)
+            } else if (dragEvent.x < binding.guideLeft.x) {
+                (activity as MainActivity).binding.viewPager2.setCurrentItem(0, true)
+            }
         }
+
 
         when (dragEvent.action) {
             DragEvent.ACTION_DRAG_STARTED -> {
