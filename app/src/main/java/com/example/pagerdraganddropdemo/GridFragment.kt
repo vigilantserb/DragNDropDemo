@@ -21,51 +21,53 @@ class GridFragment : Fragment() {
         binding.grid.layoutManager =
             GridLayoutManager(requireContext(), 3, GridLayoutManager.VERTICAL, false)
         binding.grid.adapter = ItemAdapter(requireActivity() as MainActivity)
-        binding.root.setOnDragListener(maskDragListener)
-        binding.grid.setOnDragListener(maskDragListener)
+        binding.dropRight.setOnDragListener(getDragListenerWithNextPosition(+1))
+        binding.dropLeft.setOnDragListener(getDragListenerWithNextPosition(-1))
         return binding.root
     }
 
-    private val maskDragListener = View.OnDragListener { view, dragEvent ->
-        val draggableItem = dragEvent.localState as View
-        Log.i("BOBAN", "X: ${dragEvent.x}")
-        if (dragEvent.x > 0) {
-            if (dragEvent.x > binding.guideRight.x) {
-                (activity as MainActivity).binding.viewPager2.setCurrentItem(1, true)
-            } else if (dragEvent.x < binding.guideLeft.x) {
-                (activity as MainActivity).binding.viewPager2.setCurrentItem(0, true)
+    private fun getDragListenerWithNextPosition(nextIndex: Int) =
+        View.OnDragListener { view, dragEvent ->
+            val draggableItem = dragEvent.localState as View
+
+            when (dragEvent.action) {
+                DragEvent.ACTION_DRAG_STARTED -> {
+                    Log.i("BOBAN", "STARTED")
+                    true
+                }
+                DragEvent.ACTION_DRAG_ENTERED -> {
+                    Log.i("BOBAN", "ENTERED")
+                    true
+                }
+                DragEvent.ACTION_DRAG_LOCATION -> {
+                    Log.i("BOBAN", "LOCATION ${dragEvent.x}")
+                    with((activity as MainActivity).binding.viewPager2) {
+                        setCurrentItem(currentItem + nextIndex, true)
+                        true
+                    }
+                }
+                DragEvent.ACTION_DRAG_EXITED -> {
+                    Log.i("BOBAN", "EXITED")
+                    draggableItem.visibility = View.VISIBLE
+                    view.invalidate()
+                    true
+                }
+                DragEvent.ACTION_DROP -> {
+                    Log.i("BOBAN", "DROP")
+                    true
+                }
+                DragEvent.ACTION_DRAG_ENDED -> {
+                    Log.i("BOBAN", "ENDED")
+                    draggableItem.visibility = View.VISIBLE
+                    view.invalidate()
+                    true
+                }
+                else -> {
+                    Log.e("BOBAN", "ELSE")
+                    false
+                }
             }
         }
-
-
-        when (dragEvent.action) {
-            DragEvent.ACTION_DRAG_STARTED -> {
-                true
-            }
-            DragEvent.ACTION_DRAG_ENTERED -> {
-                true
-            }
-            DragEvent.ACTION_DRAG_LOCATION -> {
-                true
-            }
-            DragEvent.ACTION_DRAG_EXITED -> {
-                draggableItem.visibility = View.VISIBLE
-                view.invalidate()
-                true
-            }
-            DragEvent.ACTION_DROP -> {
-                true
-            }
-            DragEvent.ACTION_DRAG_ENDED -> {
-                draggableItem.visibility = View.VISIBLE
-                view.invalidate()
-                true
-            }
-            else -> {
-                false
-            }
-        }
-    }
 
     companion object {
         /**

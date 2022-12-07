@@ -9,21 +9,24 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/grid"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="wrap_content"
+        android:background="#937573"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guide_left"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_percent=".25" />
+        app:layout_constraintGuide_percent=".14" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guide_right"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_percent=".75" />
+        app:layout_constraintGuide_percent=".86" />
 
     <View
         android:layout_width="1dp"
@@ -36,5 +39,20 @@
         android:layout_height="match_parent"
         android:background="#FF0000"
         app:layout_constraintStart_toEndOf="@id/guide_left" />
+
+    <View
+        android:id="@+id/drop_right"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@id/guide_right" />
+
+
+    <View
+        android:id="@+id/drop_left"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        app:layout_constraintEnd_toEndOf="@id/guide_left"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
