@@ -10,32 +10,45 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
+import com.example.pagerdraganddropdemo.adapters.Item
 import com.example.pagerdraganddropdemo.adapters.ItemAdapter
 import com.example.pagerdraganddropdemo.databinding.FragmentFirstBinding
+import com.example.pagerdraganddropdemo.pagerAdapters.DragNDropCallback
 import java.util.*
 
 
 class GridFragment : Fragment() {
+    var indexOfFragment: Int = -1
     private lateinit var binding: FragmentFirstBinding
+
+    lateinit var adapter: ItemAdapter
+    private lateinit var dragNDropCallback: DragNDropCallback
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        indexOfFragment = arguments?.getInt(ARG_SECTION_NUMBER)!!
+        Log.e("BOBAN", "INDEX: $indexOfFragment")
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         binding = FragmentFirstBinding.inflate(inflater, container, false)
         setUpGrid()
-//        binding.dropRight.setOnDragListener(getDragListenerWithNextPosition(+1))
-//        binding.dropLeft.setOnDragListener(getDragListenerWithNextPosition(-1))
+        binding.dropRight.setOnDragListener(getDragListenerWithNextPosition(+1))
+        binding.dropLeft.setOnDragListener(getDragListenerWithNextPosition(-1))
         return binding.root
     }
 
     private fun setUpGrid() {
-        val adapter = ItemAdapter(requireActivity() as MainActivity)
+        adapter = ItemAdapter(requireActivity() as MainActivity, indexOfFragment).apply {
+            dropCallback = { from, to ->
+                dragNDropCallback.onDropEvent(from, to)
+            }
+        }
         binding.grid.adapter = adapter
         binding.grid.layoutManager =
             GridLayoutManager(requireContext(), 3, GridLayoutManager.VERTICAL, false)
-//        val callback: ItemTouchHelper.Callback = ItemMoveCallback(adapter)
-//        val touchHelper = ItemTouchHelper(callback)
-//        touchHelper.attachToRecyclerView(binding.grid)
     }
 
     private fun getDragListenerWithNextPosition(nextIndex: Int) =
@@ -44,7 +57,6 @@ class GridFragment : Fragment() {
 
             when (dragEvent.action) {
                 DragEvent.ACTION_DRAG_STARTED -> {
-                    Log.i("BOBAN", "STARTED")
                     true
                 }
                 DragEvent.ACTION_DRAG_ENTERED -> {
@@ -60,28 +72,23 @@ class GridFragment : Fragment() {
                             }
                         }
                     }, 1500)
-                    Log.i("BOBAN", "ENTERED")
                     true
                 }
                 DragEvent.ACTION_DRAG_LOCATION -> {
-                    Log.i("BOBAN", "LOCATION ${dragEvent.x}")
                     true
                 }
                 DragEvent.ACTION_DRAG_EXITED -> {
-                    Log.i("BOBAN", "EXITED")
                     view.invalidate()
                     timer.cancel()
                     timer.purge()
                     true
                 }
                 DragEvent.ACTION_DROP -> {
-                    Log.i("BOBAN", "DROP")
                     timer.cancel()
                     timer.purge()
                     true
                 }
                 DragEvent.ACTION_DRAG_ENDED -> {
-                    Log.i("BOBAN", "ENDED")
                     view.invalidate()
                     timer.cancel()
                     timer.purge()
@@ -93,6 +100,14 @@ class GridFragment : Fragment() {
                 }
             }
         }
+
+    fun attachDragNDropCallback(dragNDropCallback: DragNDropCallback) {
+        this.dragNDropCallback = dragNDropCallback
+    }
+
+    fun swapItems(from: Item, to: Item) {
+        adapter.swapItems(from, to)
+    }
 
     companion object {
         /**

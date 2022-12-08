@@ -7,36 +7,34 @@ import android.view.DragEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.util.component1
-import androidx.core.util.component2
 import androidx.core.view.DragStartHelper
-import androidx.draganddrop.DropHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.example.pagerdraganddropdemo.MainActivity
 import com.example.pagerdraganddropdemo.R
 import com.example.pagerdraganddropdemo.databinding.ItemGridBinding
-import java.util.*
+import java.util.Collections
 
-class ItemAdapter(private val activity: MainActivity) :
+class ItemAdapter(private val activity: MainActivity, indexOfFragment: Int) :
     RecyclerView.Adapter<ItemAdapter.ItemViewHolder>() {
 
+    lateinit var dropCallback: ((Item, Item) -> Unit)
 
-    private val items = listOf(
-        Item(1, "TEXT 111"),
-        Item(2, "TEXT 222"),
-        Item(3, ""),
-        Item(4, ""),
-        Item(5, ""),
-        Item(6, "TEXT 666"),
-        Item(7, "TEXT 777"),
-        Item(8, ""),
-        Item(9, "TEXT 999")
+    internal val items = mutableListOf(
+        Item(1, indexOfFragment, "1"),
+        Item(2, indexOfFragment, "2"),
+        Item(3, indexOfFragment, ""),
+        Item(4, indexOfFragment, ""),
+        Item(5, indexOfFragment, ""),
+        Item(6, indexOfFragment, "6"),
+        Item(7, indexOfFragment, "7"),
+        Item(8, indexOfFragment, ""),
+        Item(9, indexOfFragment, "9")
     )
 
     inner class ItemViewHolder(private val binding: ItemGridBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        lateinit var boundItem: Item
+        private lateinit var boundItem: Item
 
         init {
 
@@ -44,18 +42,8 @@ class ItemAdapter(private val activity: MainActivity) :
                 val eventItem = event.localState as Item
                 when (event.action) {
                     DragEvent.ACTION_DROP -> {
-                        val droppedItem = eventItem
-                        val receivingItem = boundItem
-                        val fromPosition = items.indexOf(droppedItem)
-                        val toPosition = items.indexOf(receivingItem
-                        )
-                        Collections.swap(items, fromPosition, toPosition)
-                        notifyDataSetChanged()
+                        dropCallback.invoke(eventItem, boundItem)
                         Log.e("BOBAN", "DROP::: boundItem: $boundItem eventItem: $eventItem")
-                        true
-                    }
-                    DragEvent.ACTION_DRAG_LOCATION -> {
-                        Log.e("BOBAN", "Drop ${event.localState as Item}")
                         true
                     }
                     else -> {
@@ -137,6 +125,15 @@ class ItemAdapter(private val activity: MainActivity) :
     }
 
     override fun getItemCount(): Int = items.size
+    fun swapItems(from: Item, to: Item) {
+        Collections.swap(items, items.indexOf(from), items.indexOf(to))
+        notifyDataSetChanged()
+    }
 }
 
-data class Item(val position: Int, val name: String, val isEmpty: Boolean = name.isEmpty())
+data class Item(
+    val id: Int,
+    var parentIndex: Int,
+    val name: String,
+    val isEmpty: Boolean = name.isEmpty()
+)
