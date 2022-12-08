@@ -12,8 +12,8 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.pagerdraganddropdemo.adapters.ItemAdapter
 import com.example.pagerdraganddropdemo.databinding.FragmentFirstBinding
-import java.util.Timer
-import java.util.TimerTask
+import java.util.*
+
 
 class GridFragment : Fragment() {
     private lateinit var binding: FragmentFirstBinding
@@ -22,18 +22,25 @@ class GridFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         binding = FragmentFirstBinding.inflate(inflater, container, false)
+        setUpGrid()
+//        binding.dropRight.setOnDragListener(getDragListenerWithNextPosition(+1))
+//        binding.dropLeft.setOnDragListener(getDragListenerWithNextPosition(-1))
+        return binding.root
+    }
+
+    private fun setUpGrid() {
+        val adapter = ItemAdapter(requireActivity() as MainActivity)
+        binding.grid.adapter = adapter
         binding.grid.layoutManager =
             GridLayoutManager(requireContext(), 3, GridLayoutManager.VERTICAL, false)
-        binding.grid.adapter = ItemAdapter(requireActivity() as MainActivity)
-        binding.dropRight.setOnDragListener(getDragListenerWithNextPosition(+1))
-        binding.dropLeft.setOnDragListener(getDragListenerWithNextPosition(-1))
-        return binding.root
+//        val callback: ItemTouchHelper.Callback = ItemMoveCallback(adapter)
+//        val touchHelper = ItemTouchHelper(callback)
+//        touchHelper.attachToRecyclerView(binding.grid)
     }
 
     private fun getDragListenerWithNextPosition(nextIndex: Int) =
         View.OnDragListener { view, dragEvent ->
             var timer = Timer()
-            val draggableItem = dragEvent.localState as View
 
             when (dragEvent.action) {
                 DragEvent.ACTION_DRAG_STARTED -> {
@@ -62,7 +69,6 @@ class GridFragment : Fragment() {
                 }
                 DragEvent.ACTION_DRAG_EXITED -> {
                     Log.i("BOBAN", "EXITED")
-                    draggableItem.visibility = View.VISIBLE
                     view.invalidate()
                     timer.cancel()
                     timer.purge()
@@ -76,7 +82,6 @@ class GridFragment : Fragment() {
                 }
                 DragEvent.ACTION_DRAG_ENDED -> {
                     Log.i("BOBAN", "ENDED")
-                    draggableItem.visibility = View.VISIBLE
                     view.invalidate()
                     timer.cancel()
                     timer.purge()
