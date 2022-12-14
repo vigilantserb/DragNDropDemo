@@ -21,6 +21,7 @@ class MainActivity : AppCompatActivity() {
 
         val adapter = ScreenSlidePagerAdapter(this)
         with(binding) {
+            viewPager2.offscreenPageLimit = 3
             viewPager2.adapter = adapter
             TabLayoutMediator(tabLayout, viewPager2) { tab, position ->
                 Log.i("BOBAN", "TAB:$tab POSITION:$position")

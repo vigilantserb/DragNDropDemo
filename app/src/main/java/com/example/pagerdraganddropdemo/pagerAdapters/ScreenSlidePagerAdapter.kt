@@ -24,7 +24,7 @@ class ScreenSlidePagerAdapter(fa: FragmentActivity) : FragmentStateAdapter(fa), 
     override fun onDropEvent(from: Item, to: Item) {
         Log.i("BOBAN", "HIGH ---- Drop ${from.parentIndex} ${to.parentIndex}")
         if (from.parentIndex == to.parentIndex) {
-            fragmentsMap[from.parentIndex]?.swapItems(from, to)
+            fragmentsMap[to.parentIndex]?.swapItems(from, to)
         } else {
             val fromParentFragment = fragmentsMap[from.parentIndex]!!
             val toParentFragment = fragmentsMap[to.parentIndex]!!

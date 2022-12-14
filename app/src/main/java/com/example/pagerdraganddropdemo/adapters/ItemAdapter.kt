@@ -39,7 +39,8 @@ class ItemAdapter(private val activity: MainActivity, indexOfFragment: Int) :
         init {
 
             binding.card.setOnDragListener { v, event ->
-                val eventItem = event.localState as Item
+                val eventItem = event.localState as Item // onaj koji se dropuje
+                // boundItem je onaj koji je vec na mestu
                 when (event.action) {
                     DragEvent.ACTION_DROP -> {
                         dropCallback.invoke(eventItem, boundItem)
