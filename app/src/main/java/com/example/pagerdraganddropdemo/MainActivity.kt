@@ -16,6 +16,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
@@ -24,6 +25,7 @@ class MainActivity : AppCompatActivity() {
             viewPager2.offscreenPageLimit = 3
             viewPager2.adapter = adapter
             TabLayoutMediator(tabLayout, viewPager2) { tab, position ->
+                Prestani da bobanujes P icko...
                 Log.i("BOBAN", "TAB:$tab POSITION:$position")
             }.attach()
         }
